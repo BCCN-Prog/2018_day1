@@ -91,3 +91,17 @@ def test_add_user_newuser():
         target_pwdb[u] = (hash,salt)
         pwdb = login.read_pwdb(pwdb_file)
         assert target_pwdb == pwdb
+
+
+PWDB_FLNAME = pathlib.Path('pwdb.pkl')
+
+def test_get_salt_nonrepeated():
+    salts=[]
+    for i in range(20):
+        salts.append(pw.get_salt())
+    for i,salt in enumerate(salts):
+        for j,others in enumerate(salts):
+            if i == j:
+                assert (salt==others)
+            elif i != j:
+                assert (salt!=others)
