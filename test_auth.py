@@ -42,6 +42,7 @@ def test_add_user_new_user():
     pwdb = {}
     with au.tempfile.TemporaryFile() as tmp_f:
         au.add_user( "John Doe", "password", "SALT", pwdb, tmp_f )
+        assert pwdb == { "John Doe" : (au.pwhash( "password", "SALT"), "SALT" ) }
 
 
 def test_read_pwdb_no_file():
