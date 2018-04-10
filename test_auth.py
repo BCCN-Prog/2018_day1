@@ -54,6 +54,7 @@ def test_read_pwdb_file():
     with au.tempfile.TemporaryFile() as tmp_f:
         pwdb = { "John Doe" : ("HASH", "SALT") }
         au.pickle.dump( pwdb, tmp_f )
+        tmp_f.seek(0) 
         assert au.read_pwdb( tmp_f ) == pwdb
 
 # doesn't work
@@ -64,7 +65,8 @@ def test_write_pwd():
             pwdb = { "John Doe" : ("HASH", "SALT") }
 
             au.pickle.dump( pwdb, tmp_f1 )
-            au.write_pwdb( pwdb, tmp_f2 )
-
+            tmp_f1.seek(0)
+            au.pickle.dump( pwdb, tmp_f2 )
+            tmp_f2.seek(0)
             assert au.read_pwdb( tmp_f1 ) == au.read_pwdb( tmp_f2 )
             
