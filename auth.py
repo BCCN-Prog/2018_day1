@@ -20,7 +20,7 @@ def authenticate(username, pass_text, pwdb):
             return True
     return False
 
-def add_user(username, password, salt, paswdb, pwdb_file):
+def add_user(username, password, salt, pwdb, pwdb_file):
     if username in pwdb:
         raise Exception('Username already exists [%s]' %username)
     else:
@@ -53,6 +53,7 @@ def get_salt():
 
 if __name__ == '__main__':
     pwdb_path = tempfile.gettempdir() / PWDB_FLNAME
+    print(pwdb_path)
     try:
         pwdb_file = open(pwdb_path, 'rb+')
     except FileNotFoundError:
