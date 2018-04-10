@@ -53,6 +53,7 @@ def get_salt():
 
 if __name__ == '__main__':
     pwdb_path = tempfile.gettempdir() / PWDB_FLNAME
+    print(pwdb_path)
     try:
         pwdb_file = open(pwdb_path, 'rb+')
     except FileNotFoundError:
