@@ -6,7 +6,7 @@ import random
 import string
 import tempfile
 
-PWDB_FLNAME = pathlib.Path('pwdb.pkl')
+PWDB_FLNAME = pathlib.Path('test_pwdb.pkl')
 
 def test_right_name_right_password():
     salt = auth.get_salt()
@@ -54,7 +54,7 @@ def test_user_already_exists():
     salt = auth.get_salt()
     pwdb = {'old_name':  (auth.pwhash('old_password',salt), salt)}
     pwdb_path = tempfile.gettempdir() / PWDB_FLNAME
-    pwdb_file = open(pwdb_path, 'wb+')
+    pwdb_file = open(pwdb_path, 'wb')
     pickle.dump(pwdb, pwdb_file)
     salt = auth.get_salt()
     try:
@@ -70,29 +70,15 @@ def test_user_not_exists():
     salt = auth.get_salt()
     pwdb = {'old_name':  (auth.pwhash('old_password',salt), salt)}
     pwdb_path = tempfile.gettempdir() / PWDB_FLNAME
-    pwdb_file = open(pwdb_path, 'wb+')
-    pickle.dump(pwdb, pwdb_file)
+    with open(pwdb_path, 'wb+') as pwdb_file:
+        pickle.dump(pwdb, pwdb_file)
     salt = auth.get_salt()
     try:
-        auth.add_user(username, password, salt, pwdb, pwdb_file)
-        pwdb_file = open(pwdb_path, 'rb+')
-        pwdb = pickle.load(pwdb_file)
-        assert pwdb[username] == (password,salt)
-    except:
-        assert False
-
-
-def test_user_not_exists():
-    username = 'new_name'
-    password = 'new_password'
-    salt = auth.get_salt()
-    pwdb = {'old_name':  (auth.pwhash('old_password',salt), salt)}
-    pwdb_path = tempfile.gettempdir() / PWDB_FLNAME
-    pwdb_file = open(pwdb_path, 'wb+')
-    pickle.dump(pwdb, pwdb_file)
-    salt = auth.get_salt()
-    try:
-        auth.add_user(username, password, salt, pwdb, pwdb_file)
-        assert True
+        with open(pwdb_path, 'wb+') as pwdb_file:
+            auth.add_user(username, password, salt, pwdb, pwdb_file)
+        with open(pwdb_path, 'rb+') as pwdb_file:
+            pwdb = pickle.load(pwdb_file)
+        print(pwdb)
+        assert pwdb[username] == (auth.pwhash(password,salt), salt)
     except:
         assert False
