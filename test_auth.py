@@ -60,7 +60,7 @@ def test_user_already_exists():
     try:
         auth.add_user(username, password, salt, pwdb, pwdb_file)
         assert False
-    except:
+    except Exception as _:
         assert True
 
 
@@ -95,9 +95,6 @@ def test_empty_username_exists():
     try:
         with open(pwdb_path, 'wb+') as pwdb_file:
             auth.add_user(username, password, salt, pwdb, pwdb_file)
-        with open(pwdb_path, 'rb+') as pwdb_file:
-            pwdb = pickle.load(pwdb_file)
-        print(pwdb)
-        assert pwdb[username] == (auth.pwhash(password,salt), salt)
-    except:
         assert False
+    except IOError as _:
+        assert True
