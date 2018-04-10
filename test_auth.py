@@ -33,3 +33,16 @@ def test_read_write():
     write_pwdb(pwdb,pwdb_file)
     pwdb_read = read_pwdb(pwdb_file)
     assert pwdb == pwdb_read
+
+def test_add_user():
+    pwdb = {}
+    salt = get_salt()
+    name = 'user'
+    pw = 'password'
+    pwdb_added = {name:(pwhash(pw,salt),salt)}
+    add_user(name,pw,salt,pwdb,pwdb_file)
+    assert pwdb == pwdb_added
+    pwdb_read = read_pwdb(pwdb_file)
+    assert pwdb == pwdb_read
+    with pytest.raises(Exception):
+        add_user(name,pw,salt,pwdb_added,pwdb_file)
