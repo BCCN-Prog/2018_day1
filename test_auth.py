@@ -3,6 +3,10 @@ import pathlib
 import pickle
 import tempfile
 
+# global pathname thingies
+PWDB_FLNAME = pathlib.Path('pwdb.pkl')
+pwdb_path = tempfile.gettempdir() / PWDB_FLNAME
+
 # user data that is correct
 db_right = list()
 db_right.append(('daniel', 'vargas', '=2od%]1*9Q', 9966))
@@ -25,7 +29,6 @@ for user in db_right:
 db_dict_wrong = dict()
 for user in db_wrong:
     db_dict_wrong[user[0]] = (user[3], user[2])
-
 
 ## start test functions
 
@@ -52,11 +55,34 @@ def test_authenticate():
 
 
 def test_io():
-    PWDB_FLNAME = pathlib.Path('pwdb.pkl')
-    pwdb_path = tempfile.gettempdir() / PWDB_FLNAME
-
     with open(pwdb_path, 'wb+') as right_file:
         auth.write_pwdb(db_dict_right, right_file)
 
     with open(pwdb_path, 'rb+') as right_file:
         assert auth.read_pwdb(right_file) == db_dict_right
+
+
+def test_add_user():
+    user = ('evert', 'de man', '6v"&?5UXx-', 10173)
+
+    with open(pwdb_path, 'wb+') as right_file:
+        auth.add_user(user[0], user[1], user[2], db_dict_right, right_file)
+
+    assert db_dict_right[user[0]] == (user[3], user[2]), 'Dict is not right in memory'
+
+    with open(pwdb_path, 'rb+') as right_file:
+        assert auth.read_pwdb(right_file) == db_dict_right
+
+
+def test_add_existing_user():
+    # get an existing user from our database
+    user = db_right[-1]
+
+    flag = False
+    with open(pwdb_path, 'wb+') as right_file:
+        try:
+            auth.add_user(user[0], user[1], user[2], db_dict_right, right_file)
+        except:
+            flag = True
+
+    assert flag
