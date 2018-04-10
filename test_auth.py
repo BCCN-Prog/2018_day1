@@ -83,7 +83,7 @@ def test_user_not_exists():
     except:
         assert False
 
-def test_empty_username_exists():
+def test_empty_username():
     username = ''
     password = 'new_password'
     salt = auth.get_salt()
@@ -96,5 +96,21 @@ def test_empty_username_exists():
         with open(pwdb_path, 'wb+') as pwdb_file:
             auth.add_user(username, password, salt, pwdb, pwdb_file)
         assert False
-    except IOError as _:
+    except auth.UsernameError as _:
+        assert True
+
+def test_empty_password():
+    username = 'new_username'
+    password = ''
+    salt = auth.get_salt()
+    pwdb = {'old_name':  (auth.pwhash('old_password',salt), salt)}
+    pwdb_path = tempfile.gettempdir() / PWDB_FLNAME
+    with open(pwdb_path, 'wb+') as pwdb_file:
+        pickle.dump(pwdb, pwdb_file)
+    salt = auth.get_salt()
+    try:
+        with open(pwdb_path, 'wb+') as pwdb_file:
+            auth.add_user(username, password, salt, pwdb, pwdb_file)
+        assert False
+    except auth.PasswordError as _:
         assert True

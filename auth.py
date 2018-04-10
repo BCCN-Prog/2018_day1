@@ -7,6 +7,8 @@ import tempfile
 
 PWDB_FLNAME = pathlib.Path('pwdb.pkl')
 CHARS = string.ascii_letters + string.digits + string.punctuation
+class PasswordError(IOError): pass
+class UsernameError(IOError): pass
 
 def get_credentials():
     username = input('Enter your username: ')
@@ -24,7 +26,9 @@ def add_user(username, password, salt, pwdb, pwdb_file):
     if username in pwdb:
         raise Exception('Username already exists [%s]' %username)
     elif not username:
-        raise IOError('Please type in some username!')
+        raise UsernameError('Please type in some username!')
+    elif not password:
+        raise PasswordError('Please type in some password!')
     else:
         pwdb[username] = (pwhash(password,salt), salt)
         write_pwdb(pwdb, pwdb_file)
