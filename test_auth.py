@@ -1,5 +1,9 @@
 import auth
+import pathlib
+import pickle
+import tempfile
 
+# user data that is correct
 db_right = list()
 db_right.append(('daniel', 'vargas', '=2od%]1*9Q', 9966))
 db_right.append(('nadine', 'heere', 'j=U]V.n`l\\', 10976))
@@ -7,9 +11,13 @@ db_right.append(('mayar', 'ali', 'PJM0~RD*|&', 6986))
 db_right.append(('marc', 'vischer', 'nL*E~T&az1', 13112))
 db_right.append(('pooja', 'subramaniam', '%9<:%fSN$}', 18453))
 
+
+# user data that is incorrect
 db_wrong = list()
 db_wrong.append(('joel', 'afreth', 'c:d{<Am),Z', 11060)) # should be 11069
 
+
+# databases in the format that is used by auth
 db_dict_right = dict()
 for user in db_right:
     db_dict_right[user[0]] = (user[3], user[2])
@@ -17,6 +25,9 @@ for user in db_right:
 db_dict_wrong = dict()
 for user in db_wrong:
     db_dict_wrong[user[0]] = (user[3], user[2])
+
+
+## start test functions
 
 def test_get_salt():
     salts = [auth.get_salt() for i in range(100)]
@@ -38,3 +49,14 @@ def test_authenticate():
 
     for user in db_wrong:
         assert not auth.authenticate(user[0], user[1], db_dict_wrong)
+
+
+def test_io():
+    PWDB_FLNAME = pathlib.Path('pwdb.pkl')
+    pwdb_path = tempfile.gettempdir() / PWDB_FLNAME
+
+    with open(pwdb_path, 'wb+') as right_file:
+        auth.write_pwdb(db_dict_right, right_file)
+
+    with open(pwdb_path, 'rb+') as right_file:
+        assert auth.read_pwdb(right_file) == db_dict_right
