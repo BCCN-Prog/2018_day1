@@ -37,6 +37,7 @@ def read_pwdb(pwdb_file):
 
 def write_pwdb(pwdb, pwdb_file):
     pickle.dump(pwdb, pwdb_file)
+    pwdb_file.seek(0)
 
 def pwhash(pass_text, salt):
     hash_ = 0
