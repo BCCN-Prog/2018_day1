@@ -46,3 +46,20 @@ def test_add_user():
     assert pwdb == pwdb_read
     with pytest.raises(Exception):
         add_user(name,pw,salt,pwdb_added,pwdb_file)
+
+def test_hash():
+    pw1 = 'pw1'
+    pw2 = 'pw2'
+    pw1_shuff = '1wp'
+    salt1 = get_salt()
+    salt2 = get_salt()
+    assert not salt1 == salt2
+    hash11 = pwhash(pw1,salt1)
+    hash22 = pwhash(pw2,salt2)
+    hash21 = pwhash(pw2,salt1)
+    hash1_shuff = pwhash(pw1_shuff,salt1)
+    hash12 = pwhash(pw1,salt2)
+    assert not hash11 == hash22
+    assert not hash11 == hash12
+    assert not hash11 == hash1_shuff
+    assert not hash11 == hash21
